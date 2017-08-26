@@ -1,7 +1,7 @@
 # CSC-598: Introduction to Computer Vision
 
 ## Overview
-This repository is an active repository for work conducted as part of American University's introductory course on computer vision. The contents and naming conventions used in this repository are subject to change.
+This repository is an active space for work conducted as part of American University's introductory course on computer vision. The contents and naming conventions used in this repository are subject to change.
 
 ## File Structure
 To be determined.
