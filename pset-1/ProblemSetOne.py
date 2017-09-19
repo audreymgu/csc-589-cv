@@ -19,27 +19,27 @@ c = np.array([0,2,3,2])
 
 # Find the dot product (also known as the inner product) of vectors a and b. Save the resulting value as variable 'aDotb'.
 aDotb = np.inner(a,b)
-print 'aDotb' + aDotb
+print aDotb
 
 # Find the element-wise product of a and b.
 a.shape = (3,1) # Convert to column
 b.shape = (3,1) # Convert to column
 aElementb = np.multiply(a,b)
-print 'aElementb' + aElementb
+print aElementb
 
 # Find (a^Tb)^Ma.
 aMatrixb = np.outer(b,a)
-print 'aMatrixb' + aMatrixb
+print aMatrixb
 
 # Without using a loop, multiply each row and column of M element-wise by a.
 a.shape = (1,3) # Convert to row
 M = np.multiply(M,a)
-print 'M element-wise by a' + M
+print M
 
 # Without using a loop, sort all of the values of the new M from (e) in increasing order and plot them in your report.
 M = np.sort(M, axis=None)
 M.shape = (4,3)
-print 'M sorted' + M
+print M
 
 # Section 3
 # Read in the images 'image1.jpg' and 'image2.jpg'.
@@ -96,7 +96,7 @@ cv2.imwrite('image7.jpg', img7)
 # Compute the average face of an individual, given a set of 100 or more images of said person.
 avg = np.zeros((250,250,3), dtype='float64')
 for filename in glob.glob('lfw/*.jpg'):
-  print filename
+  # print filename
   selection = io.imread(filename)
   selection = np.array(selection, dtype='float64')
   avg = avg + selection / 530
@@ -104,8 +104,3 @@ for filename in glob.glob('lfw/*.jpg'):
 # Convert to uint8 and save image
 avg = np.array(avg, dtype='uint8')
 io.imsave('image8.jpg', avg)
-
-
-
-
-
