@@ -82,7 +82,7 @@ def lo_pass(img, fname, sigma, color, size=15, padding='symmetric', saving=True)
   gaussian_filter = gauss(sigma, size)
   processed_img = conv2d(img, gaussian_filter, padding, color)
   if saving:
-    cv2.imwrite('generated_images/'+fname+'_lo'+str(sigma)+'.bmp', processed_img)
+    cv2.imwrite('../data/'+fname+'_lo'+str(sigma)+'.bmp', processed_img)
   else:
     pass
   return processed_img
@@ -101,7 +101,7 @@ def hi_pass(img, fname, sigma, color, size=15, padding='symmetric', saving=True,
     pass
   processed_img = np.subtract(original, lo_img)
   if saving:
-    cv2.imwrite('generated_images/'+fname+'_hi'+str(sigma)+'.bmp', processed_img)
+    cv2.imwrite('../data/'+fname+'_hi'+str(sigma)+'.bmp', processed_img)
     print 'High-pass result of '+str(fname)+' saved.'
   else:
     pass
@@ -110,100 +110,100 @@ def hi_pass(img, fname, sigma, color, size=15, padding='symmetric', saving=True,
 # Applying Filters
 
 ## A concise iterative approach to filtering images using blob was tested, but ultimately dropped when hi_pass was not proprely saving results when called within this loop. The code is retained below, should the issue be resolved in the future.
-# for filename in glob.glob('initial_images/*.bmp'):
+# for filename in glob.glob('../data/*.bmp'):
 #   selected = cv2.imread(filename, -1)
 #   hi_img = hi_pass(selected, fname=filename, sigma=5, color=1, size=7, padding='symmetric', saving=True, complement=True)
-#   cv2.imwrite('generated_images/'+filename+'hi'+str(5)+'.bmp', hi_img)
+#   cv2.imwrite('../data/'+filename+'hi'+str(5)+'.bmp', hi_img)
 
 ## There was some degree of fiddling of various filtering settings to produce high-pass and low-pass images that produced reasonable results when combined. The last settings used are retained here.
 
 ### Take the high-pass and low-pass of bicycle.bmp
-img = cv2.imread('initial_images/bicycle.bmp', -1)
+img = cv2.imread('../data/bicycle.bmp', -1)
 lo_pass(img, fname='bicycle', sigma=10, color=1, size=15, padding='symmetric', saving=True)
 hi_pass(img, fname='bicycle', sigma=5, color=1, size=7, padding='symmetric', saving=True, complement=False)
 
 ### Take the high-pass and low-pass of bird.bmp
-img = cv2.imread('initial_images/bird.bmp', -1)
+img = cv2.imread('../data/bird.bmp', -1)
 lo_pass(img, fname='bird', sigma=10, color=1, size=15, padding='symmetric', saving=True)
 hi_pass(img, fname='bird', sigma=3, color=1, size=7, padding='symmetric', saving=True, complement=False)
 
 ### Take the high-pass and low-pass of cat.bmp
-img = cv2.imread('initial_images/cat.bmp', -1)
+img = cv2.imread('../data/cat.bmp', -1)
 lo_pass(img, fname='cat', sigma=10, color=1, size=15, padding='symmetric', saving=True)
 hi_pass(img, fname='cat', sigma=3, color=1, size=7, padding='symmetric', saving=True, complement=False)
 
 ### Take the high-pass and low-pass of dog.bmp
-img = cv2.imread('initial_images/dog.bmp', -1)
+img = cv2.imread('../data/dog.bmp', -1)
 lo_pass(img, fname='dog', sigma=10, color=1, size=15, padding='symmetric', saving=True)
 hi_pass(img, fname='dog', sigma=3, color=1, size=7, padding='symmetric', saving=True, complement=False)
 
 ### Take the high-pass and low-pass of einstein.bmp
-img = cv2.imread('initial_images/einstein.bmp', -1)
+img = cv2.imread('../data/einstein.bmp', -1)
 lo_pass(img, fname='einstein', sigma=10, color=1, size=15, padding='symmetric', saving=True)
 hi_pass(img, fname='einstein', sigma=3, color=1, size=7, padding='symmetric', saving=True, complement=False)
 
 ### Take the high-pass and low-pass of fish.bmp
-img = cv2.imread('initial_images/fish.bmp', -1)
+img = cv2.imread('../data/fish.bmp', -1)
 lo_pass(img, fname='fish', sigma=10, color=1, size=15, padding='symmetric', saving=True)
 hi_pass(img, fname='fish', sigma=3, color=1, size=7, padding='symmetric', saving=True, complement=False)
 
 ### Take the high-pass and low-pass of marilyn.bmp
-img = cv2.imread('initial_images/marilyn.bmp', -1)
+img = cv2.imread('../data/marilyn.bmp', -1)
 lo_pass(img, fname='marilyn', sigma=10, color=1, size=15, padding='symmetric', saving=True)
 hi_pass(img, fname='marilyn', sigma=3, color=1, size=7, padding='symmetric', saving=True, complement=False)
 
 ### Take the high-pass and low-pass of motorcycle.bmp
-img = cv2.imread('initial_images/motorcycle.bmp', -1)
+img = cv2.imread('../data/motorcycle.bmp', -1)
 lo_pass(img, fname='motorcycle', sigma=10, color=1, size=15, padding='symmetric', saving=True)
 hi_pass(img, fname='motorcycle', sigma=3, color=1, size=7, padding='symmetric', saving=True, complement=False)
 
 ### Take the high-pass and low-pass of plane.bmp
-img = cv2.imread('initial_images/plane.bmp', -1)
+img = cv2.imread('../data/plane.bmp', -1)
 lo_pass(img, fname='plane', sigma=10, color=1, size=15, padding='symmetric', saving=True)
 hi_pass(img, fname='plane', sigma=3, color=1, size=7, padding='symmetric', saving=True, complement=False)
 
 ### Take the high-pass and low-pass of submarine.bmp
-img = cv2.imread('initial_images/submarine.bmp', -1)
+img = cv2.imread('../data/submarine.bmp', -1)
 lo_pass(img, fname='submarine', sigma=10, color=1, size=15, padding='symmetric', saving=True)
 hi_pass(img, fname='submarine', sigma=3, color=1, size=7, padding='symmetric', saving=True, complement=False)
 
 # Image Hybridization
 
 ### Combine dog (high-pass) with cat (low-pass). The high-pass information was multiplied by three to increase its prominence.
-hi_img = cv2.imread('generated_images/dog_hi5.bmp', -1)
-lo_img = cv2.imread('generated_images/cat_lo10.bmp', -1)
+hi_img = cv2.imread('../data/dog_hi5.bmp', -1)
+lo_img = cv2.imread('../data/cat_lo10.bmp', -1)
 composite = hi_img*3 + lo_img
-cv2.imwrite('generated_images/dog_cat_d5_boost.bmp', composite)
+cv2.imwrite('../data/dog_cat_d5_boost.bmp', composite)
 
 ### Combine einstein (high-pass) with marilyn (low-pass).
-hi_img = cv2.imread('generated_images/einstein_hi5.bmp', -1)
-lo_img = cv2.imread('generated_images/marilyn_lo10.bmp', -1)
+hi_img = cv2.imread('../data/einstein_hi5.bmp', -1)
+lo_img = cv2.imread('../data/marilyn_lo10.bmp', -1)
 composite = hi_img + lo_img
-cv2.imwrite('generated_images/einstein_marilyn_d5.bmp', composite)
+cv2.imwrite('../data/einstein_marilyn_d5.bmp', composite)
 
 ### Combine plane (high-pass) with bird (low-pass).
-hi_img = cv2.imread('generated_images/plane_hi5.bmp', -1)
-lo_img = cv2.imread('generated_images/bird_lo10.bmp', -1)
+hi_img = cv2.imread('../data/plane_hi5.bmp', -1)
+lo_img = cv2.imread('../data/bird_lo10.bmp', -1)
 composite = hi_img + lo_img
-cv2.imwrite('generated_images/plane_bird_d5.bmp', composite)
+cv2.imwrite('../data/plane_bird_d5.bmp', composite)
 
 ### Combine fish (high-pass) with submarine (low-pass).
-hi_img = cv2.imread('generated_images/fish_hi5.bmp', -1)
-lo_img = cv2.imread('generated_images/submarine_lo10.bmp', -1)
+hi_img = cv2.imread('../data/fish_hi5.bmp', -1)
+lo_img = cv2.imread('../data/submarine_lo10.bmp', -1)
 composite = hi_img + lo_img
-cv2.imwrite('generated_images/fish_submarine_d5.bmp', composite)
+cv2.imwrite('../data/fish_submarine_d5.bmp', composite)
 
 ## Combining the low frequency information from the motorcycle with the high frequency information from the bicycle resulted in an image that had significant artifacting. This version was dropped in favor of the converse.
-# hi_img = cv2.imread('generated_images/motorcycle_hi5.bmp', -1)
-# lo_img = cv2.imread('generated_images/bicycle_lo10.bmp', -1)
+# hi_img = cv2.imread('../data/motorcycle_hi5.bmp', -1)
+# lo_img = cv2.imread('../data/bicycle_lo10.bmp', -1)
 # composite = hi_img + lo_img
-# cv2.imwrite('generated_images/motorcycle_bicycle_d5.bmp', composite)
+# cv2.imwrite('../data/motorcycle_bicycle_d5.bmp', composite)
 
 ### Combine bicycle (high-pass) with motorcycle (low-pass)
-hi_img = cv2.imread('generated_images/bicycle_hi5.bmp', -1)
-lo_img = cv2.imread('generated_images/motorcycle_lo10.bmp', -1)
+hi_img = cv2.imread('../data/bicycle_hi5.bmp', -1)
+lo_img = cv2.imread('../data/motorcycle_lo10.bmp', -1)
 composite = hi_img + lo_img
-cv2.imwrite('generated_images/bicycle_motorcycle_d5.bmp', composite)
+cv2.imwrite('../data/bicycle_motorcycle_d5.bmp', composite)
 
 
 
