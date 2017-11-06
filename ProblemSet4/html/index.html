@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>CS 589 Project</title>
+<title>CSS 589: Image Blending Using Pyramids</title>
 <link href='http://fonts.googleapis.com/css?family=Nunito:300|Crimson+Text|Droid+Sans+Mono' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" title="Default" href="styles/github.css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>  
@@ -21,7 +21,6 @@ h1 {
 	font-weight: normal;
 	font-size: 28px;
 	margin: 25px 0px 0px 0px;
-	text-transform: lowercase;
 
 }
 
@@ -130,69 +129,78 @@ td img {
 <body>
 <div id="header" >
 <div id="headersub">
-<h1>Your Name, Your Team Member's Name <span style="color: #DE3737"></span></h1>
+<h1>George Gu</h1>
 </div>
 </div>
 <div class="container">
 <h2>CSC 589 AU / Homework 4 / Image Blending Using Pyramids</h2>
 
-<div style="float: right; padding: 20px">
-<img src="placeholder.jpg" />
-<p style="font-size: 14px">Example of a right floating element.</p>
-</div>
+<p>In the field of image processing, image pyramids are a robust means of storing and representing image data. Though perhaps most notably useful as a compression and scaling tool, representation of images in this form allows for interesting manipulation of image information in ways that would otherwise be difficult.</p>
 
-<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<p>To understand the benefits provided by pyramids, one must first understand their construction. The two most common pyramids - gaussian pyramids and laplacian pyramids - are created through a series of procedural operations that result in repeatedly decimated images. Gaussian pyramids are created by downscaling an image by a factor of two per side (a 4x decrease in overall surface area) by discarding every other pixel, combining the remaining pixels in a reduced image, and blurring the result to avoid noise and artifacting. This procedure continues until the smallest possible size (2x2, in the case of a square image) is reached, at which point the "top" of the pyramid has been achieved.</p>
 
-<ol>
-<li>list element 1.</li>
-<li>list element 2.</li>
-<li>etc.</li>
-</ol>
 
-<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<img src="gaussian.png" width=600px/>
+<p style="font-size: 14px">Composite image representing a gaussian pyramid.</p>
 
-<div style="clear:both">
-<h3>Example heading</h3>
 
-<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<p>A close relative to the gaussian pyramid, the laplacian pyramid is derived from taking the difference of each blurred gaussian layer from the unblurred original one step down from the pyramid. The higher layer is scaled <em>up</em>, blurred with a gaussian filter, and subtracted from the lower layer to obtain the corresponding laplacian.</p>
 
-<h2>Example of code with highlighting</h2>
-The javascript in the <code>highlighting</code> folder is configured to do syntax highlighting in code blocks such as the one below.<p>
+<img src="laplacian.png" width=600px/>
+<p style="font-size: 14px">Composite image representing a laplacian pyramid.</p>
 
-<pre><code>
-%example code
-for i = 1:length(offset)
-    source = imread(sprintf('%s/source_%02d.jpg',data_dir,i));
-    mask   = imread(sprintf('%s/mask_%02d.jpg',data_dir,i));
-    target = imread(sprintf('%s/target_%02d.jpg',data_dir,i));
+<p>Together, a gaussian pyramid and laplacian pyramid constitute a complete representation of an image from its original size down to its smallest possible dimensions. In practice, all but the smallest layer of the Gaussian pyramid and the entirety of the laplacian pyramid are needed to reconstruct the image at all pyramid sizes.</p>
 
-</code></pre>
+<p>Image pyramids can also be used to blend two images in a way that helps mask its composite nature. This is done by using a binary mask to merge the laplacian pyramid of both images at every level and then collapsing the laplacian pyramid in on itself (this is achieved by expanding each upper layer to the size of the layer directly beneath it). The final results make for an entertaining visual spectacle, and appear fairly well constructed with proper masking and placement. While possible in both black and white as well as color, the code written for this assignment nevertheless appears to have some difficulty in split-processing each channel of a color image individually, with odd, glitch like artifacts in many of the color composites. This likely has less to do with the blending algorithm itself as written and more with the means by which image channels are individually processed - though handling channels by slicing tensors should be proper in principle, there appears to be unforeseen difficulties with it in practice.</p>
 
-<h3>Results in a table</h3>
+<img src="businessman_fist2.jpg"/>
+<p style="font-size: 14px">This process lends itself to sureal imagery.</p>
+
+<p>Above is an example of a fairly successful image composite. The image of the fist here was rescaled, repositioned and made to have a matching background prior to masking; by preprocessing as such, the two line up crisply and appear fairly seamless. The same surprisingly applies also to color, albeit with odd artifacts as previously discussed.</p>
+
+<img src="businessman_fist_color.jpg"/>
+<p style="font-size: 14px">Still fairly clean.</p>
+
+<p>Another successful composite can be seen with this image combining a plate of vegetables with a rendering of godzilla. Again, positioning, scale, and consideration of composition are key aspects that lead to the success of this image.</p>
+
+<img src="girl_godzilla.jpg"/>
+<p style="font-size: 14px">Gah! It's going to eat the vegetables!</p>
+
+<p>Yet another example clearly illustrates some of the key aspects needed for a successful composite. Here, we see PacMan's face composited over that of Thomas the Tank Engine.</p>
+
+<img src="thomas_pacman2.jpg"/>
+
+<p>Relying only on a binary mask, laplacian blending is best suited for composites involving simple shapes and images that already possess fairly high visual compatibility to begin with. In the case of backgrounds and other ambient image textures, a close match in tone and noise level are needed to avoid a strong dissonance at the border of where the two images are combined. Some evidence of this can be seen in the color version of the Godzilla composite, where the sky and the background of the plate image show some signs of differentiation. In this case, the casting of the image to grayscale actually aids in bolstering the cohesion of the image, as the two backgrounds are neverless fairly similar in tone.</p>
+
+<img src="girl_godzilla_color.jpg"/>
+<p style="font-size: 14px">Note the increased visibility of the mask border.</p>
+
+<p>Ultimately, laplacian blending - as well as its more complex counterparts - is a powerful image processing tool whose applications are numerous as they are fascinating. With applications ranging from surrealist art to panorama stiching, the value of blending techniques is not to be underestimated.</p>
+
+<h3>Results</h3>
 
 <table border=1>
 <tr>
 <td>
-<img src="placeholder.jpg" width="24%"/>
-<img src="placeholder.jpg"  width="24%"/>
-<img src="placeholder.jpg" width="24%"/>
-<img src="placeholder.jpg" width="24%"/>
+<img src="apple_orange.jpg" width="24%"/>
+<img src="businessman_fist1.jpg"  width="24%"/>
+<img src="girl_godzilla.jpg" width="24%"/>
+<img src="thomas_pacman2.jpg" width="24%"/>
 </td>
 </tr>
 
 <tr>
 <td>
-<img src="placeholder.jpg" width="24%"/>
-<img src="placeholder.jpg"  width="24%"/>
-<img src="placeholder.jpg" width="24%"/>
-<img src="placeholder.jpg" width="24%"/>
+<img src="apple_orange_color.jpg" width="24%"/>
+<img src="businessman_fist_color.jpg"  width="24%"/>
+<img src="girl_godzilla_color.jpg" width="24%"/>
+<img src="thomas_pacman_color.jpg" width="24%"/>
 </td>
 </tr>
 
 </table>
 
 <div style="clear:both" >
-<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 </div>
 </body>
 </html>
