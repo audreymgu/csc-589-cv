@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import misc
-from scipy import ndimage
+from scipy import ndimage as nd
 
 # Problem 2: Histogram Equalization
 

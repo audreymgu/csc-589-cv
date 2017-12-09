@@ -1,0 +1,182 @@
+<html>
+<head>
+<title>CS 143 Project</title>
+<link href='http://fonts.googleapis.com/css?family=Nunito:300|Crimson+Text|Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" title="Default" href="styles/github.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>  
+
+<link rel="stylesheet" href="highlighting/styles/default.css">
+<script src="highlighting/highlight.pack.js"></script>
+
+<style type="text/css">
+body {
+	margin: 0px;
+	width: 100%;
+	font-family: 'Crimson Text', serif;
+	font-size: 20px;
+	background: #fcfcfc;
+}
+h1 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 28px;
+	margin: 25px 0px 0px 0px;
+	text-transform: lowercase;
+
+}
+
+h2 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 32px;
+	margin: 15px 0px 35px 0px;
+	color: #333;	
+	word-spacing: 3px;
+}
+
+h3 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 26px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+h4 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 22px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+
+h5 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 18px;
+	margin: 10px 0px 10px 0px;
+	color: #111;
+	word-spacing: 2px;
+}
+
+p, li {
+	color: #444;
+}
+
+a {
+	color: #DE3737;
+}
+
+.container {
+	margin: 0px auto 0px auto;
+	width: 960px;
+}
+
+#header {
+	background: #333;
+	width: 100%;
+}
+
+#headersub {
+	color: #ccc;
+	width: 960px;
+	margin: 0px auto 0px auto;
+	padding: 20px 0px 20px 0px;
+}
+
+.chart {
+	width: 480px;
+}
+.lol {
+	font-size: 16px;
+	color: #888;
+	font-style: italic;
+}
+.sep {
+	height: 1px;
+	width: 100%;
+	background: #999;
+	margin: 20px 0px 20px 0px;
+}
+.footer{
+	font-size: 16px;
+}
+.latex {
+	width: 100%;
+}
+
+.latex img {
+	display: block;
+	margin: 0px auto 0px auto;
+}
+
+pre {
+	font-family: 'Droid Sans Mono';
+	font-size: 14px;
+}
+
+td img {
+  vertical-align: middle;
+}
+
+#contents a {
+}
+</style>
+<script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+</script>
+</head>
+<body>
+<div id="header" >
+<div id="headersub">
+<h1>George Gu</h1>
+</div>
+</div>
+<div class="container">
+
+<h2>CSC 589 / Project 4 / Local Feature Matching</h2>
+
+<div style="float: right; padding: 20px">
+</div>
+
+<p>This project sought to implement the SIFT feature recognition and matching pipeline, originally proposed and developed by David Lowe in 2004. An abbreviation for Scale Invariant Feature Transform, this algorithm is most well-known for its ability to identify features regardless of the scale at which they appear in the image; this is achieved by detecting features in a test or training image at multiple scales.</p>
+
+<p>SIFT is one of many algorithms within computer vision whose ultimate purpose is the recognition and matching of an object or set of visual characteristics across multiple images. This ability has many potential applications; by recognizing common features between two images, SIFT provides the basic information necessary to warp both images and blend them into a perspective-correct composite image; this sort of tracking also serves as the basis for object and facial recognition, and the subsequent use of these techniques to overlay digital elements atop a live camera feed in real-time, as with augmented reality. Its relatively low computational load and high detection reliability has led to its widespread use and modification in the field of computer vision.</p>
+
+<p>This code was developed in direct reference to Lowe's original paper, and begins first with the consecutive decimation of the image to create the starting seeds for five different image "octaves" - groupings of images at the same resolution. These starting images were then blurred with a gaussian filter with progressively increasing sigma values. The number of octaves, the number of images per octave, and the increasing of sigma all directly reference the empirical values found by Lowe in his report. The difference between each adjacent pair of blurred images was then taken in order to create a new superset of images which approximate the laplacian of gaussian for each octave. From this point, local extrema within each of the image planes with one plane adjacent on either side would be found through a 3x3x3 neighborhood evaluation around a center pixel. These points are the fundamental feature detected by the algorithm; they would then subsequently be filtered and pruned in order to preserve only stable and reliable features for recognition later. These features would then be taken, described by a multi-dimensional vector, and then used in this more descriptive form to find matches in other images. The code for the differences of gaussians can be seen below.</p>
+
+<pre><code>
+	def get_interest_points(img):
+		### Create initial seed values for blurring
+		sigma = 1.6
+		k = math.sqrt(2)
+		### Create initial images for each octave
+		img_0 = img
+		img_1 = cv2.pyrDown(img_0)
+		img_2 = cv2.pyrDown(img_1)
+		img_3 = cv2.pyrDown(img_2)
+		### Create empty lists to hold each of the four gaussian octaves
+		octave_0 = []
+		octave_1 = []
+		octave_2 = []
+		octave_3 = []
+		### Create empty lists to hold each of the four DoG octaves
+		dog_octave_0 = []
+		dog_octave_1 = []
+		dog_octave_2 = []
+		dog_octave_3 = []
+		### Generate five scales per octave with sigma, increasingly multiplicatively by k
+		for i in range(4):
+			for j in range(5):
+				blur_img = ndimage.filters.gaussian_filter(eval(str('img_')+str(i)), sigma*k**(j+i*2))
+				eval(str('octave_')+str(i)).append(blur_img)
+		### Find the Difference of Gaussians for each octave
+		for i in range(4):
+			for j in range(4):
+				dog_img = eval(str('octave_')+str(i)+str('[')+str(j)+str(']')) - eval(str('octave_')+str(i)+str('[')+str(j+1)+str(']'))
+				eval(str('dog_octave_')+str(i)).append(dog_img)
+</code></pre>
+</div>
+</body>
+</html>
